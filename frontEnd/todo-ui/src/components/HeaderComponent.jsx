@@ -1,7 +1,19 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
+import { isUserLoggedIn, logout } from "../service/AuthService";
 
 const HeaderComponent = () => {
+
+   const navigator = useNavigate();
+   const isAuth = isUserLoggedIn();
+
+   function handleLogout(){
+     logout();
+     navigator("/login")
+   }
+
+   const username = sessionStorage.getItem("authenticatedUser");
+
   return (
     <div>
       <header>
@@ -23,35 +35,44 @@ const HeaderComponent = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbar1">
             <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <NavLink to="/todos" className="nav-link">
-                  Todos
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">
-                  Home
-                </a>
-              </li>
-              <li className="nav-item dropdown position-absolute top-1 end-0 mx-lg-5">
+              {
+                isAuth &&
+                <li className="nav-item">
+                  <NavLink to="/todos" className="nav-link">Todos</NavLink>
+                </li>
+              }
+              
+              <li className="nav-item dropdown position-absolute top-0 end-0 mx-lg-5">
                 <a
                   className="nav-link  dropdown-toggle"
                   href="#"
                   data-toggle="dropdown"
                 >
-                  Profile
+                  Welcome {username}
                 </a>
                 <ul className="dropdown-menu">
-                  <li className="nav-item">
-                    <NavLink to="/login" className="dropdown-item">
-                      Login
-                    </NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink to="/register" className="dropdown-item">
-                      Register
-                    </NavLink>
-                  </li>
+                  {
+                    !isAuth &&
+                    <li className="nav-item">
+                       <NavLink to="/register" className="dropdown-item">Register</NavLink>
+                    </li>
+                  }
+
+                  {
+                     !isAuth &&
+                     <li className="nav-item">
+                       <NavLink to="/login" className="dropdown-item">Login</NavLink>
+                     </li>
+                  }
+
+{
+                     isAuth &&
+                     <li className="nav-item">
+                       <NavLink to="/login" className="dropdown-item" onClick={handleLogout}>Logout</NavLink>
+                     </li>
+                  }
+                  
+                  
                 </ul>
               </li>
             </ul>
