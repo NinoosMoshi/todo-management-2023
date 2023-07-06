@@ -7,6 +7,7 @@ import com.ninos.entity.User;
 import com.ninos.exception.TodoApiException;
 import com.ninos.repositroy.RoleRepository;
 import com.ninos.repositroy.UserRepository;
+import com.ninos.security.JwtTokenProvider;
 import com.ninos.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public String register(RegisterDTO registerDTO) {
@@ -66,6 +68,9 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "USer logged-in successfully";
+
+        String token = jwtTokenProvider.generateToken(authentication);
+
+        return token;
     }
 }

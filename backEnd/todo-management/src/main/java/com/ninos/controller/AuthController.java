@@ -1,5 +1,6 @@
 package com.ninos.controller;
 
+import com.ninos.dto.JwtAuthResponse;
 import com.ninos.dto.LoginDTO;
 import com.ninos.dto.RegisterDTO;
 import com.ninos.service.AuthService;
@@ -24,9 +25,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO){
-        String response = authService.login(loginDTO);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO loginDTO){
+        String token = authService.login(loginDTO);
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(token);
+
+        return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
     }
 
 

@@ -1,5 +1,7 @@
 package com.ninos.config;
 
+import com.ninos.security.JwtAuthenticationEntryPoint;
+import com.ninos.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,10 +11,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -20,6 +24,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SpringSecurityConfig {
 
     private UserDetailsService userDetailsService;
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private JwtAuthenticationFilter authenticationFilter;
 
 
     @Bean
@@ -43,6 +49,10 @@ public class SpringSecurityConfig {
                    authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     authorize.anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
+//                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint));
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
