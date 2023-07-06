@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { completeTodo, deleteTodo, inCompleteTodo, listTodos } from "../service/TodoService";
 import { useNavigate } from "react-router-dom";
+import { isAdminUser } from "../service/AuthService";
 
 
 const ListTodoComponent = () => {
@@ -9,6 +10,7 @@ const ListTodoComponent = () => {
 
   const navigator = useNavigate();
 
+  const isAdmin = isAdminUser();
 
   useEffect(() =>{
     listOfTodos();
@@ -61,8 +63,11 @@ const ListTodoComponent = () => {
   return (
     <div className="container">
         <h1 className="text-center">Todo List</h1>
-
-        <button className="btn btn-primary" onClick={addNewTodo}>Add New Todo</button>
+        {
+          isAdmin && 
+          <button className="btn btn-primary" onClick={addNewTodo}>Add New Todo</button>
+        }
+        
 
         <table className="table table-striped">
            <thead>
@@ -81,8 +86,16 @@ const ListTodoComponent = () => {
                        <td>{temp.description}</td>
                        <td>{temp.completed ? 'YES' : 'NO'}</td>
                        <td>
-                         <button className="btn btn-info" onClick={() => updateTodo(temp.id)}>Update</button>
-                         <button className="btn btn-danger" onClick={() => removeTodo(temp.id)} style={ {marginLeft:'10px'} }>Delete</button>
+                        {
+                          isAdmin && 
+                          <button className="btn btn-info" onClick={() => updateTodo(temp.id)}>Update</button>
+                        }
+                         
+                        {
+                          isAdmin &&
+                          <button className="btn btn-danger" onClick={() => removeTodo(temp.id)} style={ {marginLeft:'10px'} }>Delete</button>
+                        } 
+                         
                          <button className="btn btn-success" onClick={() => markCompleteTodo(temp.id)}  style={ {marginLeft:'10px'} }>complete</button>
                          <button className="btn btn-warning" onClick={() => markInCompleteTodo(temp.id)} style={ {marginLeft:'10px'} }>In complete</button>
                        </td>
